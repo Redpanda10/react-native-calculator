@@ -1,87 +1,107 @@
-import { Background } from '@react-navigation/elements';
 import { useState } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Alert} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const buttons = [
-    ['7', '8', '9', '÷'],
-    ['4', '5', '6', '×'],
-    ['1', '2', '3', '-'],
-    ['0', 'C', '=', '+'],
-  ];
+  ['7', '8', '9', '÷'],
+  ['4', '5', '6', '×'],
+  ['1', '2', '3', '-'],
+  ['0', 'C', '=', '+'],
+];
 
+export default function Calculator() {
+  const [input, setInput] = useState('');
 
-export default function Calculator(){
+  function handlePress(value) {
+    if (value === 'C') {
+      setInput('');
+    } else if (value === '=') {
+      try {
+        const expr = input.replace(/×/g, "*").replace(/÷/g, "/");
+        setInput(eval(expr).toString()); 
+      } catch (error) {
+        setInput("Error");
+      }
+    } else {
+      setInput(input + value);
+    }
+  }
 
-  const[input,setinput]= useState('text input')
-  const[output,setoutput] = useState('text output')
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.screen}>
+        <Text style={styles.input}>{input || "0"}</Text>
+      </View>
 
-
-function handlePress(value:string){
-
-
-}
-  return <SafeAreaView style={styles.container}>
-
-    <View style = {styles.screen}>
-      <Text style={styles.input}>
-        {input}
-      </Text>
-      <Text style={styles.output}>
-        {output}
-      </Text>
-    </View>
-    <View >
-      {buttons.map((item, index)=>
-      (
-          <View key={index} style={{flexDirection:'row'}}>
-            {item.map((value)=>(
-          <TouchableOpacity key={value}
-          onPress={handlePress(value)}
-          >
-            <Text style={styles.text}>
-              {value}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View>
+        {buttons.map((row, index) => (
+          <View key={index} style={styles.buttonsRow}>
+            {row.map((value) => (
+              <TouchableOpacity
+                key={value}
+                style={[
+                  styles.button,
+                  (value === 'C' || value === '=') && styles.buttonSpecial,
+                ]}
+                onPress={() => handlePress(value)}
+              >
+                <Text style={styles.text}>{value}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
-      ))}
-    </View>
-  </SafeAreaView>
+        ))}
+      </View>
+    </SafeAreaView>
+  );
 }
 
-const styles= StyleSheet.create({
-  container:{
-    flex:1,
-    backgroundColor:"black",
-    alignItems:'center',
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "black",
+    justifyContent: "flex-end",
+    padding: 20,
   },
-  screen:{
-    // flex:0.5,
-    backgroundColor:'blue',
-    margin:20,
-    padding:30,
-    height:100,
 
+  screen: {
+    minHeight: 120,
+    width: "100%",
+    borderColor: "#8A2BE2",
+    borderWidth: 3,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
-  input:{
 
+  input: {
+    fontSize: 48,
+    color: "#fff",
   },
-  output:{
 
-
+  buttonsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 8,
   },
-  text:{
-    color:'white',
-    fontSize:50,
-    backgroundColor:'#8A2BE2',
-    borderRadius:15,
-    margin:10,
-    padding:10,
-    maxWidth:150,
-    minWidth:50,
-    textAlign:'center',
 
+  button: {
+    width: "22%",
+    backgroundColor: "#8A2BE2",
+    paddingVertical: 18,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
   },
-})
+
+  buttonSpecial: {
+    backgroundColor: "#D9534F",
+  },
+
+  text: {
+    fontSize: 32,
+    color: "white",
+    fontWeight: "bold",
+  },
+});
